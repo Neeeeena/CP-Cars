@@ -55,11 +55,12 @@ class Car extends Thread {
     Pos newpos;                      // New position to go to
     
     PosSemaphore ps;
+    Alley alley;
 
-    public Car(int no, CarDisplayI cd, Gate g, PosSemaphore ps) {
+    public Car(int no, CarDisplayI cd, Gate g, PosSemaphore ps, Alley alley) {
     	
     	this.ps = ps;
-
+    	this.alley = alley;
         this.no = no;
         this.cd = cd;
         mygate = g;
@@ -133,7 +134,7 @@ class Car extends Thread {
                 
                 newpos = nextPos(curpos);
                 ps.s[newpos.row][newpos.col].P();
-                
+                alleyCtrl(newpos); 
                 
                 //  Move to new position 
                 cd.clear(curpos);
@@ -153,6 +154,20 @@ class Car extends Thread {
             e.printStackTrace();
         }
     }
+   
+   public void alleyCtrl(Pos pos) throws InterruptedException{
+	   
+	   if( pos.col == 3 && (pos.row == 8 || pos.row == 9)){
+		   alley.enter(0); // 0 = clockwise
+	   } else if (pos.col == 1 && pos.row == 1){
+		   alley.leave(0);
+	   } else if ( pos.col == 1 && pos.row == 0) {
+		   alley.enter(1); 
+	   } else if (pos.col == 3 && pos.row == 10){
+		   alley.leave(1);
+	   }
+	   
+   }
 
 }
 
@@ -176,16 +191,18 @@ public class CarControl implements CarControlI{
     Car[]  car;               // Cars
     Gate[] gate;              // Gates
     PosSemaphore ps;
+    Alley alley; 
 
     public CarControl(CarDisplayI cd) {
         this.cd = cd;
         car  = new  Car[9];
         gate = new Gate[9];
         ps = new PosSemaphore(11,12);
+        alley = new Alley();
 
         for (int no = 0; no < 9; no++) {
             gate[no] = new Gate();
-            car[no] = new Car(no,cd,gate[no],ps);
+            car[no] = new Car(no,cd,gate[no],ps, alley);
             car[no].start();
         } 
     }

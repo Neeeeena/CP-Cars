@@ -4,7 +4,8 @@ public class Alley{
 	int counterWise = 0;
 	
 	public void enter(int no) throws InterruptedException{
-		if(no == 1 || no == 2 || no == 3 || no == 4){
+		// 0 = clockwise
+		if(no == 0){
 			if(clockWise == 0){
 				sAlley.P();
 				clockWise++;
@@ -18,7 +19,7 @@ public class Alley{
 	}
 
 	public void leave(int no) throws InterruptedException{
-		if(no == 1 || no == 2 || no == 3 || no == 4){
+		if(no == 0){
 			if(clockWise == 1){
 				sAlley.V();
 				clockWise--;
