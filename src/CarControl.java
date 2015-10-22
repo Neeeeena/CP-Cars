@@ -131,10 +131,12 @@ class Car extends Thread {
                     mygate.pass(); 
                     speed = chooseSpeed();
                 }
-                
+
                 newpos = nextPos(curpos);
+                alleyCtrl(no, newpos);                 
                 ps.s[newpos.row][newpos.col].P();
-                alleyCtrl(newpos); 
+                
+                
                 
                 //  Move to new position 
                 cd.clear(curpos);
@@ -155,16 +157,19 @@ class Car extends Thread {
         }
     }
    
-   public void alleyCtrl(Pos pos) throws InterruptedException{
-	   
-	   if( pos.col == 3 && (pos.row == 8 || pos.row == 9)){
-		   alley.enter(0); // 0 = clockwise
-	   } else if (pos.col == 1 && pos.row == 1){
-		   alley.leave(0);
-	   } else if ( pos.col == 1 && pos.row == 0) {
-		   alley.enter(1); 
-	   } else if (pos.col == 3 && pos.row == 10){
-		   alley.leave(1);
+   public void alleyCtrl(int no, Pos pos) throws InterruptedException{
+	   if(no < 5 ){
+		   if( pos.col == 2 && (pos.row == 8 || pos.row == 9)){
+			   alley.enter(0); // 0 = clockwise
+		   } else if (pos.col == 2 && pos.row == 1){
+			   alley.leave(0);}
+		   }
+	   else{
+		   if ( pos.col == 0 && pos.row == 1) {
+			   alley.enter(1); 
+		   }else if (pos.col == 3 && pos.row == 10){
+			   alley.leave(1);
+		   }
 	   }
 	   
    }
