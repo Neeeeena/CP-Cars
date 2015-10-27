@@ -56,13 +56,15 @@ class Car extends Thread {
     
     PosSemaphore ps;
     Alley alley;
+    Barrier barrier;
 
-    public Car(int no, CarDisplayI cd, Gate g, PosSemaphore ps, Alley alley) {
+    public Car(int no, CarDisplayI cd, Gate g, PosSemaphore ps, Alley alley, Barrier barrier) {
     	
     	this.ps = ps;
     	this.alley = alley;
         this.no = no;
         this.cd = cd;
+        this.barrier = barrier;
         mygate = g;
         startpos = cd.getStartPos(no);
         barpos = cd.getBarrierPos(no);  // For later use
@@ -133,6 +135,9 @@ class Car extends Thread {
                 }
 
                 newpos = nextPos(curpos);
+                if(newpos==barrier.critpos[no]){
+                	barrier.sync();
+                }
                 alleyCtrl(no, newpos);                 
                 ps.s[newpos.row][newpos.col].P();
                 
@@ -197,6 +202,7 @@ public class CarControl implements CarControlI{
     Gate[] gate;              // Gates
     PosSemaphore ps;
     Alley alley; 
+    Barrier barrier;
 
     public CarControl(CarDisplayI cd) {
         this.cd = cd;
@@ -204,10 +210,11 @@ public class CarControl implements CarControlI{
         gate = new Gate[9];
         ps = new PosSemaphore(11,12);
         alley = new Alley();
+        barrier = new Barrier();
 
         for (int no = 0; no < 9; no++) {
             gate[no] = new Gate();
-            car[no] = new Car(no,cd,gate[no],ps, alley);
+            car[no] = new Car(no,cd,gate[no],ps, alley, barrier);
             car[no].start();
         } 
     }
@@ -222,11 +229,11 @@ public class CarControl implements CarControlI{
     
 
     public void barrierOn() { 
-        cd.println("Barrier On not implemented in this version");
+        barrier.on();
     }
 
     public void barrierOff() { 
-        cd.println("Barrier Off not implemented in this version");
+        barrier.off();
     }
 
     public void barrierShutDown() { 
