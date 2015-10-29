@@ -4,10 +4,13 @@ public class Alley{
 	int counterWise = 0;
 	Semaphore firstc = new Semaphore(1);
 	Semaphore firstcc = new Semaphore(1);
+	Semaphore protectcw = new Semaphore(1);
+	Semaphore protectccw = new Semaphore(1);
 
 	
 	
 	public void enter(int no) throws InterruptedException{
+		System.out.println("sAlley: "+sAlley);
 		// 0 = clockwise
 		if(no == 0){
 			firstc.P();
@@ -30,13 +33,17 @@ public class Alley{
 		if(no == 0){
 			if(clockWise == 1){
 				sAlley.V();
-				clockWise--;
-			} else clockWise --;
+			}
+			protectcw.P();
+			clockWise--;
+			protectcw.V();
 		} else{
 			if(counterWise == 1){
 				sAlley.V();
-				counterWise--;
-			} else counterWise --;
+			}
+			protectccw.P();
+			clockWise--;
+			protectccw.V();
 		}
 	}
 }

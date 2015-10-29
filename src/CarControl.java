@@ -49,7 +49,6 @@ class Car extends Thread {
     Color col;                       // Car  color
     Gate mygate;                     // Gate at startposition
 
-
     int speed;                       // Current car speed
     Pos curpos;                      // Current position 
     Pos newpos;                      // New position to go to
@@ -68,7 +67,7 @@ class Car extends Thread {
         mygate = g;
         startpos = cd.getStartPos(no);
         barpos = cd.getBarrierPos(no);  // For later use
-
+        
         col = chooseColor();
 
         // do not change the special settings for car no. 0
@@ -135,10 +134,11 @@ class Car extends Thread {
                 }
 
                 newpos = nextPos(curpos);
+                alleyCtrl(no, newpos);      
                 if(newpos.col == barrier.critpos[no].col && newpos.row==barrier.critpos[no].row){
                 	barrier.sync();
                 }
-                alleyCtrl(no, newpos);                 
+                           
                 ps.s[newpos.row][newpos.col].P();
                 
                 
@@ -210,7 +210,7 @@ public class CarControl implements CarControlI{
         gate = new Gate[9];
         ps = new PosSemaphore(11,12);
         alley = new Alley();
-        barrier = new Barrier();
+        barrier = new Barrier(this);
 
         for (int no = 0; no < 9; no++) {
             gate[no] = new Gate();
@@ -218,13 +218,25 @@ public class CarControl implements CarControlI{
             car[no].start();
         } 
     }
+    
+    public int drivingCars(){
+    	int carsCounter = 0;
+    	for(int i=0;i<9;i++)
+    	{
+    		if(gate[i].isopen){
+    			carsCounter++;
+    		}
+    	}return carsCounter;
+    	}
 
    public void startCar(int no) {
         gate[no].open();
+        
     }
 
     public void stopCar(int no) {
         gate[no].close();
+        
     }
     
 
