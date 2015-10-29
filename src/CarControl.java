@@ -135,7 +135,7 @@ class Car extends Thread {
                 }
 
                 newpos = nextPos(curpos);
-                if(newpos==barrier.critpos[no]){
+                if(newpos.col == barrier.critpos[no].col && newpos.row==barrier.critpos[no].row){
                 	barrier.sync();
                 }
                 alleyCtrl(no, newpos);                 
