@@ -26,21 +26,21 @@ class Barrier {
 	}
 
    public void sync() throws InterruptedException { 
-	   System.out.println("1bar: "+bar);
+	   
 	   if(barrier){
+		   System.out.println("inden bar: "+bar);
 		   mutex.P();
 		   count++;
 		   mutex.V();
 		   
 		   int noOfCars = carControl.drivingCars();
 		   System.out.println("count: "+count+" noOfCars: "+noOfCars);
-		   System.out.println("bar: "+bar);
 		   if(count==noOfCars){
 			   System.out.println("come on!");
 			   for(int i=0;i<noOfCars-1;i++){
 				   bar.V();
 			   }
-			   System.out.println("bar: "+bar);
+			   System.out.println("(kør)bar: "+bar);
 			   count=0;
 		   }else{bar.P();System.out.println("bar: "+bar);}
 

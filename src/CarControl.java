@@ -38,7 +38,7 @@ class Gate {
 
 class Car extends Thread {
 
-    int basespeed = 100;             // Rather: degree of slowness
+    int basespeed = 60;             // Rather: degree of slowness
     int variation =  50;             // Percentage of base speed
 
     CarDisplayI cd;                  // GUI part
@@ -150,9 +150,9 @@ class Car extends Thread {
                 sleep(speed());
                 cd.clear(curpos,newpos);
                 cd.mark(newpos,col,no);
-                
-                ps.s[curpos.row][curpos.col].V();
                 leaveAlley(no,curpos);
+                ps.s[curpos.row][curpos.col].V();
+                
                 curpos = newpos;
                 
             }
@@ -164,28 +164,12 @@ class Car extends Thread {
         }
     }
    
-   public void alleyCtrl(int no, Pos pos) throws InterruptedException{
-	   if(no < 5 ){
-		   if( pos.col == 2 && (pos.row == 8 || pos.row == 9)){
-			   alley.enter(0); // 0 = clockwise
-		   } else if (pos.col == 2 && pos.row == 1){
-			   alley.leave(0);}
-		   }
-	   else{
-		   if ( pos.col == 0 && pos.row == 1) {
-			   alley.enter(1); 
-		   }else if (pos.col == 3 && pos.row == 10){
-			   alley.leave(1);
-		   }
-	   }
-	   
-   }
    public void enterAlley(int no, Pos pos) throws InterruptedException{
-	   if( no < 5 && pos.col == 2 && (pos.row == 8 || pos.row == 9)){
+	   if( no < 5 && ((pos.col == 1 && pos.row == 8) || (pos.col == 2 && pos.row == 9))){
 		   alley.enter(0);
 	   }
 
-	   if ( no > 5 && pos.col == 0 && pos.row == 1) {
+	   if ( no >= 5 && pos.col == 0 && pos.row == 1) {
 		   alley.enter(1); 
 	   }
 	    
@@ -195,7 +179,7 @@ class Car extends Thread {
 	   if( no < 5 && pos.col == 2 && (pos.row == 1)){
 		   alley.leave(0);
 	   }
-	   else if ( no > 5 && pos.col == 3 && pos.row == 10) {
+	   else if ( no >= 5 && pos.col == 2 && pos.row == 10) {
 		   alley.leave(1); 
 	   }   
    }
