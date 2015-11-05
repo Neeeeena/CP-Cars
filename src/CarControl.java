@@ -134,12 +134,13 @@ class Car extends Thread {
                 }
 
                 newpos = nextPos(curpos);
-                //alleyCtrl(no, newpos); 
-                enterAlley(no,newpos);
-                if(newpos.col == barrier.critpos[no].col && newpos.row==barrier.critpos[no].row){
-                	barrier.sync();
+
+
+                if(no<5 && ((newpos.col == 1 && newpos.row == 8) || (newpos.col == 2 && newpos.row == 9))){
+                	alley.enterClockwise();
+                }else if( no >= 5 && newpos.col == 0 && newpos.row == 1) {
+                	alley.enterCounterwise();
                 }
-                           
                 ps.s[newpos.row][newpos.col].P();
                 
                 
@@ -150,9 +151,14 @@ class Car extends Thread {
                 sleep(speed());
                 cd.clear(curpos,newpos);
                 cd.mark(newpos,col,no);
-                leaveAlley(no,curpos);
+
                 ps.s[curpos.row][curpos.col].V();
-                
+                if( no < 5 && curpos.col == 2 && (curpos.row == 1)){
+         		   alley.leaveClockwise();
+         	   }
+         	   else if ( no >= 5 && curpos.col == 2 && curpos.row == 10) {
+         		   alley.leaveCounterwise(); 
+         	   }   
                 curpos = newpos;
                 
             }
@@ -164,25 +170,6 @@ class Car extends Thread {
         }
     }
    
-   public void enterAlley(int no, Pos pos) throws InterruptedException{
-	   if( no < 5 && ((pos.col == 1 && pos.row == 8) || (pos.col == 2 && pos.row == 9))){
-		   alley.enter(0);
-	   }
-
-	   if ( no >= 5 && pos.col == 0 && pos.row == 1) {
-		   alley.enter(1); 
-	   }
-	    
-   }
-   
-   public void leaveAlley(int no, Pos pos) throws InterruptedException{
-	   if( no < 5 && pos.col == 2 && (pos.row == 1)){
-		   alley.leave(0);
-	   }
-	   else if ( no >= 5 && pos.col == 2 && pos.row == 10) {
-		   alley.leave(1); 
-	   }   
-   }
 
 }
 class PosSemaphore{
@@ -214,7 +201,7 @@ public class CarControl implements CarControlI{
         gate = new Gate[9];
         ps = new PosSemaphore(11,12);
         alley = new Alley();
-        barrier = new Barrier(this);
+        //barrier = new Barrier(this);
 
         for (int no = 0; no < 9; no++) {
             gate[no] = new Gate();
@@ -245,11 +232,11 @@ public class CarControl implements CarControlI{
     
 
     public void barrierOn() { 
-        barrier.on();
+     //   barrier.on();
     }
 
     public void barrierOff() { 
-        barrier.off();
+       // barrier.off();
     }
 
     public void barrierShutDown() { 
