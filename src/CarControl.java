@@ -134,7 +134,8 @@ class Car extends Thread {
                 }
 
                 newpos = nextPos(curpos);
-                alleyCtrl(no, newpos);      
+                //alleyCtrl(no, newpos); 
+                enterAlley(no,newpos);
                 if(newpos.col == barrier.critpos[no].col && newpos.row==barrier.critpos[no].row){
                 	barrier.sync();
                 }
@@ -150,7 +151,8 @@ class Car extends Thread {
                 cd.clear(curpos,newpos);
                 cd.mark(newpos,col,no);
                 
-                ps.s[curpos.row][curpos.col].V();	
+                ps.s[curpos.row][curpos.col].V();
+                leaveAlley(no,curpos);
                 curpos = newpos;
                 
             }
@@ -178,9 +180,27 @@ class Car extends Thread {
 	   }
 	   
    }
+   public void enterAlley(int no, Pos pos) throws InterruptedException{
+	   if( no < 5 && pos.col == 2 && (pos.row == 8 || pos.row == 9)){
+		   alley.enter(0);
+	   }
+
+	   if ( no > 5 && pos.col == 0 && pos.row == 1) {
+		   alley.enter(1); 
+	   }
+	    
+   }
+   
+   public void leaveAlley(int no, Pos pos) throws InterruptedException{
+	   if( no < 5 && pos.col == 2 && (pos.row == 1)){
+		   alley.leave(0);
+	   }
+	   else if ( no > 5 && pos.col == 3 && pos.row == 10) {
+		   alley.leave(1); 
+	   }   
+   }
 
 }
-
 class PosSemaphore{
 	
 	public Semaphore[][] s;
