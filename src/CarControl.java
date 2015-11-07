@@ -141,6 +141,9 @@ class Car extends Thread {
                 }else if( no >= 5 && newpos.col == 0 && newpos.row == 1) {
                 	alley.enterCounterwise();
                 }
+                if(newpos.col == barrier.critpos[no].col && newpos.row==barrier.critpos[no].row){
+                	barrier.sync();
+                }
                 ps.s[newpos.row][newpos.col].P();
                 
                 
@@ -201,7 +204,7 @@ public class CarControl implements CarControlI{
         gate = new Gate[9];
         ps = new PosSemaphore(11,12);
         alley = new Alley();
-        //barrier = new Barrier(this);
+        barrier = new Barrier(this);
 
         for (int no = 0; no < 9; no++) {
             gate[no] = new Gate();
@@ -232,11 +235,11 @@ public class CarControl implements CarControlI{
     
 
     public void barrierOn() { 
-     //   barrier.on();
+        barrier.on();
     }
 
     public void barrierOff() { 
-       // barrier.off();
+        barrier.off();
     }
 
     public void barrierShutDown() { 
