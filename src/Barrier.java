@@ -8,6 +8,7 @@ class Barrier {
 	CarControl carControl;
 	Pos critpos[] = new Pos[9];
 	int carsFurther = 0;
+	boolean shutdown = false;
 	
 	public Barrier(CarControl carC){
 		carControl = carC;
@@ -31,18 +32,32 @@ class Barrier {
 			}
 
 			carsFurther++;
+			System.out.println("carsFurther" + carsFurther);
+			System.out.println("driving cars: " + carControl.drivingCars());
 			if(carsFurther != carControl.drivingCars()){
 				notify();
-			}else{count = 0;carsFurther=0;}
+			}else{
+				count = 0;
+				carsFurther=0;
+				if(shutdown){
+					on = false;
+				}
+			}
 			//notifyAll();
 			
 		}
+	}
+	
+	public synchronized void shutdown(){
+		shutdown = true;
+		
 	}
 	
 	public synchronized void on(){
 		on = true;
 		count = 0;
 		carsFurther = 0;
+		shutdown = false; 
 	}
 	
 	public synchronized void off(){
