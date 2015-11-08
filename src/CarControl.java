@@ -140,7 +140,7 @@ class Car extends Thread {
                 // Alley 
                 if(no<5 && ((newpos.col == 1 && newpos.row == 8) || (newpos.col == 2 && newpos.row == 9))){
                 	alley.enterClockwise();
-                }else if( no >= 5 && newpos.col == 0 && newpos.row == 1) {
+                }else if( no >= 5 && newpos.col == 3 && newpos.row == 0) {
                 	alley.enterCounterwise();
                 }
                 if(newpos.col == barrier.critpos[no].col && newpos.row==barrier.critpos[no].row){
