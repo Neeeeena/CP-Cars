@@ -138,7 +138,10 @@ class Car extends Thread {
                 newpos = nextPos(curpos);
 
                 // Alley 
-                if(no<5 && ((newpos.col == 1 && newpos.row == 8) || (newpos.col == 2 && newpos.row == 9))){
+                if(no<3 && ((newpos.col == 0 && newpos.row == 8))){
+                	alley.enterClockwise12();
+                }
+                if(no<5 && no>2 && (newpos.col == 2 && newpos.row == 9)){
                 	alley.enterClockwise();
                 }else if( no >= 5 && newpos.col == 0 && newpos.row == 1) {
                 	alley.enterCounterwise();
@@ -173,10 +176,13 @@ class Car extends Thread {
                 //Alley
                 if( no < 5 && curpos.col == 2 && (curpos.row == 1)){
          		   alley.leaveClockwise();
-         	   }
-         	   else if ( no >= 5 && curpos.col == 2 && curpos.row == 10) {
+         	   	}
+         	   	else if ( no >= 5 && curpos.col == 0 && curpos.row == 9) {
+         		   alley.leaveCounterwise12(); 
+         	   	}
+         	   	else if ( no >= 5 && curpos.col == 2 && curpos.row == 10) {
          		   alley.leaveCounterwise(); 
-         	   }   
+         	   	}
                 
                 // Bridge
                 if( no < 5 && curpos.col == 4 && (curpos.row == 1)){
