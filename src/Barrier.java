@@ -32,8 +32,7 @@ class Barrier {
 			}
 
 			carsFurther++;
-			System.out.println("carsFurther" + carsFurther);
-			System.out.println("driving cars: " + carControl.drivingCars());
+
 			if(carsFurther != carControl.drivingCars()){
 				notify();
 			}else{
@@ -43,7 +42,6 @@ class Barrier {
 					on = false;
 				}
 			}
-			//notifyAll();
 			
 		}
 	}
