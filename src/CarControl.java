@@ -162,17 +162,18 @@ class Car extends Thread {
                 if(newpos.col == barrier.critpos[no].col && newpos.row==barrier.critpos[no].row){
                 	barrier.sync();
                 }
+                count++; //3
                 
                 
 				ps.s[newpos.row][newpos.col].P();
-				count++; //3 - newpos taget
+				count++; //4 - newpos taget
 				
                                 
                 //  Move to new position 
                 cd.clear(curpos);
                 cd.mark(curpos,newpos,col,no);
                 sleep(speed());
-                count++; //4 
+                count++; //5 
                 cd.clear(curpos,newpos);
                 cd.mark(newpos,col,no);
 
@@ -203,15 +204,19 @@ class Car extends Thread {
         	}else if(inAlleyCC){
         		alley.leaveCounterwise();
         	}
-        	if(count==1||count==2){
+        	if(count==1||count==3){
         		ps.s[curpos.row][curpos.col].V();
-        		barrier.removed();
         		cd.clear(curpos);}
-        	else if(count==3){
+        	else if(count==2){
+        		ps.s[curpos.row][curpos.col].V();
+        		barrier.removedDecCount();
+        		cd.clear(curpos);
+        	}
+        	else if(count==4){
         		ps.s[curpos.row][curpos.col].V();
         		ps.s[newpos.row][newpos.col].V();
         		cd.clear(curpos,newpos);
-        	}else if(count==4){
+        	}else if(count==5){
         		ps.s[newpos.row][newpos.col].V();
         		ps.s[curpos.row][curpos.col].V();
         		cd.clear(curpos);
@@ -277,7 +282,8 @@ public class CarControl implements CarControlI{
     				carsCounter++;
     			}
     		}
-    	}return carsCounter;
+    	}
+    	return carsCounter;
     	}
 
    public void remove(Car c){

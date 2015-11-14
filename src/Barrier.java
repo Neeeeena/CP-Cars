@@ -22,6 +22,10 @@ class Barrier {
 		critpos[7] = new Pos(4,10);
 		critpos[8] = new Pos(4,11);
 	}
+	public synchronized void removedDecCount(){
+		count--;
+		notifyAll();
+	}
 	public synchronized void removed(){
 		notifyAll();
 	}
@@ -31,6 +35,8 @@ class Barrier {
 			count++;
 			
 			while(count!=carControl.drivingCars()){
+				System.out.println("cars: "+ carControl.drivingCars());
+				System.out.println("count: "+count);
 				wait();
 			}
 			off();
@@ -40,6 +46,8 @@ class Barrier {
 			count++;
 
 			while(count!=carControl.drivingCars()){
+				System.out.println("cars: "+ carControl.drivingCars());
+				System.out.println("count: "+count);
 				wait();
 			}
 
