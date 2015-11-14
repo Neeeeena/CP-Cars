@@ -24,7 +24,7 @@ class Barrier {
 	}
 	public synchronized void removedDecCount(){
 		count--;
-		notifyAll();
+		//notifyAll();
 	}
 	public synchronized void removed(){
 		notifyAll();
@@ -35,8 +35,6 @@ class Barrier {
 			count++;
 			
 			while(count!=carControl.drivingCars()){
-				System.out.println("cars: "+ carControl.drivingCars());
-				System.out.println("count: "+count);
 				wait();
 			}
 			off();
@@ -46,8 +44,6 @@ class Barrier {
 			count++;
 
 			while(count!=carControl.drivingCars()){
-				System.out.println("cars: "+ carControl.drivingCars());
-				System.out.println("count: "+count);
 				wait();
 			}
 
