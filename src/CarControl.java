@@ -38,7 +38,7 @@ class Gate {
 
 class Car extends Thread {
 
-    int basespeed = 100;             // Rather: degree of slowness
+    int basespeed = 120;             // Rather: degree of slowness
     int variation =  50;             // Percentage of base speed
 
     CarDisplayI cd;                  // GUI part
@@ -55,17 +55,22 @@ class Car extends Thread {
     
     PosSemaphore ps;
     Alley alley;
-    Barrier barrier;
-    Bridge bridge;
+    CarControl carControl;
+    int count = 0;
+    boolean inAlleyC;
+    boolean inAlleyCC;
 
-    public Car(int no, CarDisplayI cd, Gate g, PosSemaphore ps, Alley alley, Barrier barrier, Bridge bridge) {
+
+    public Car(int no, CarDisplayI cd, Gate g, PosSemaphore ps, Alley alley, CarControl cc) {
     	
     	this.ps = ps;
     	this.alley = alley;
         this.no = no;
         this.cd = cd;
-        this.barrier = barrier;
-        this.bridge = bridge; 
+        carControl = cc;
+        inAlleyCC = false;
+        inAlleyC = false;
+
         mygate = g;
         startpos = cd.getStartPos(no);
         barpos = cd.getBarrierPos(no);  // For later use
@@ -119,83 +124,101 @@ class Car extends Thread {
     boolean atGate(Pos pos) {
         return pos.equals(startpos);
     }
+    public void remove(Car c){
+    	carControl.remove(c);
+    }
+    
 
    public void run() {
         try {
+        	
 
             speed = chooseSpeed();
             curpos = startpos;
             cd.mark(curpos,col,no);
 
             while (true) { 
+            	count = 0;
                 sleep(speed());
 
                 if (atGate(curpos)) { 
                     mygate.pass(); 
                     speed = chooseSpeed();
                 }
+                count++; //1
 
                 newpos = nextPos(curpos);
 
                 // Alley 
                 if(no<5 && ((newpos.col == 1 && newpos.row == 8) || (newpos.col == 2 && newpos.row == 9))){
                 	alley.enterClockwise();
-                }else if( no >= 5 && newpos.col == 0 && newpos.row == 1) {
+                	inAlleyC = true;
+                }else if( no >= 5 && newpos.col == 0 && newpos.row == 1) { 	
                 	alley.enterCounterwise();
+                	inAlleyCC = true;
                 }
-                if(newpos.col == barrier.critpos[no].col && newpos.row==barrier.critpos[no].row){
-                	barrier.sync();
-                }
+                count++; //2 
                 
-              //Bridge
-                if( no < 5 && newpos.col == 1 && (newpos.row == 1)){
-          		   bridge.enter();
-          	   }
-          	   else if ( no >= 5 && newpos.col == 3 && newpos.row == 0) {
-          		   bridge.enter(); 
-          	   } 
-           	 
-                
-                
-                ps.s[newpos.row][newpos.col].P();
-                
-                
-                
+				ps.s[newpos.row][newpos.col].P();
+				count++; //3 - newpos taget
+				
+                                
                 //  Move to new position 
                 cd.clear(curpos);
                 cd.mark(curpos,newpos,col,no);
                 sleep(speed());
+                count++; //4 
                 cd.clear(curpos,newpos);
                 cd.mark(newpos,col,no);
 
                 ps.s[curpos.row][curpos.col].V();
+
                 
                 //Alley
                 if( no < 5 && curpos.col == 2 && (curpos.row == 1)){
          		   alley.leaveClockwise();
+         		   inAlleyC = false;
          	   }
          	   else if ( no >= 5 && curpos.col == 2 && curpos.row == 10) {
-         		   alley.leaveCounterwise(); 
+         		   alley.leaveCounterwise();
+         		   inAlleyCC = false;
          	   }   
-                
-                // Bridge
-                if( no < 5 && curpos.col == 4 && (curpos.row == 1)){
-          		   bridge.leave();
-          	   }
-          	   else if ( no >= 5 && curpos.col == 0 && curpos.row == 0) {
-          		   bridge.leave(); 
-          	   } 
-            
+               
+
                 curpos = newpos;
+                
                 
             }
 
-        } catch (Exception e) {
-            cd.println("Exception in Car no. " + no);
-            System.err.println("Exception in Car no. " + no + ":" + e);
-            e.printStackTrace();
+        } catch (InterruptedException e) {
+        	cd.println("i catch, count: "+count);
+        	if(inAlleyC){
+        		alley.leaveClockwise();
+        	}else if(inAlleyCC){
+        		alley.leaveCounterwise();
+        	}
+        	if(count==0||count==1||count==2){
+        		cd.println("count er 0, bil er: "+no);
+        		ps.s[curpos.row][curpos.col].V();
+        		cd.clear(curpos);
+        	}else if(count==3){
+        		cd.println("count er 3, bil er: "+no);
+        		ps.s[curpos.row][curpos.col].V();
+        		ps.s[newpos.row][newpos.col].V();
+        		cd.clear(curpos,newpos);
+        	}else if(count==4){
+        		cd.println("count er 4, bil er: "+no);
+        		ps.s[newpos.row][newpos.col].V();
+        		ps.s[curpos.row][curpos.col].V();
+        		cd.clear(curpos);
+        	}
+  //          curpos=startpos;
         }
     }
+   
+   public void cleanUp(){
+	   
+   }
    
 
 }
@@ -220,8 +243,7 @@ public class CarControl implements CarControlI{
     Gate[] gate;              // Gates
     PosSemaphore ps;
     Alley alley; 
-    Barrier barrier;
-    Bridge bridge; 
+
 
     public CarControl(CarDisplayI cd) {
         this.cd = cd;
@@ -229,12 +251,11 @@ public class CarControl implements CarControlI{
         gate = new Gate[9];
         ps = new PosSemaphore(11,12);
         alley = new Alley();
-        barrier = new Barrier(this);
-        bridge = new Bridge();
+
 
         for (int no = 0; no < 9; no++) {
             gate[no] = new Gate();
-            car[no] = new Car(no,cd,gate[no],ps, alley, barrier, bridge);
+            car[no] = new Car(no,cd,gate[no],ps, alley,this);
             car[no].start();
         } 
     }
@@ -249,6 +270,9 @@ public class CarControl implements CarControlI{
     	}return carsCounter;
     	}
 
+   public void remove(Car c){
+	   c = null;
+   }
    public void startCar(int no) {
         gate[no].open();
         
@@ -261,27 +285,34 @@ public class CarControl implements CarControlI{
     
 
     public void barrierOn() { 
-        barrier.on();
+    	cd.println("Barrier on not implemented in this version");
     }
 
     public void barrierOff() { 
-        barrier.off();
+    	cd.println("Barrier off not implemented in this version");
     }
 
     public void barrierShutDown() { 
-        barrier.shutdown();
+    	cd.println("Barrier shutdown not implemented in this version");
     }
 
     public void setLimit(int k) { 
-        bridge.setLimit(k);;
+    	cd.println("Set limit not implemented in this version");
     }
 
     public void removeCar(int no) { 
-        cd.println("Remove Car not implemented in this version");
+        if(car[no]!=null && car[no].isAlive()){
+        	stopCar(no);
+        	car[no].interrupt();
+        	
+        }
     }
 
-    public void restoreCar(int no) { 
-        cd.println("Restore Car not implemented in this version");
+    public void restoreCar(int no) {
+    	if(!car[no].isAlive()){
+	    	car[no] = new Car(no,cd,gate[no],ps, alley, this);
+	        car[no].start();
+    	}
     }
 
     /* Speed settings for testing purposes */
