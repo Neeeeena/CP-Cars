@@ -24,6 +24,29 @@ public class CarTest extends Thread {
                 sleep(3000);
                 cars.stopAll();
                 break;
+            case 1: 
+            	// Demonstration of startCar/stopCar
+            	// Should let the cars go one round (unless very fast)
+            	
+            	// Clockwise, Counterclockwise and 0
+            	cars.startCar(1);
+            	cars.startCar(5);
+            	cars.startCar(0);
+            	sleep(3000);
+            	cars.stopCar(1);
+            	cars.stopCar(5);
+            	cars.stopCar(0);            	
+            	break; 
+            case 2: 
+            	// Demonstration of barrierOn/barrierOff
+            	
+            	// Demonstration of barrierOn/barrierOff when stopping and starting a car
+            	// Demonstration of barrierShutDown 
+            	// Demonstration of barrierShutDown when stopping and starting a car
+            	// Demonstration of removeCar/restoreCar
+            	// Demonstration of bridge - setLimit 1, 2, 3, 4, 5, 6
+            
+            	
 
             case 19:
                 // Demonstration of speed setting.

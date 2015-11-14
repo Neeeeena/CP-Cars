@@ -236,6 +236,7 @@ public class CarControl implements CarControlI{
             gate[no] = new Gate();
             car[no] = new Car(no,cd,gate[no],ps, alley, barrier, bridge);
             car[no].start();
+            
         } 
     }
     
