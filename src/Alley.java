@@ -5,13 +5,11 @@ class Alley{
 	
 	public synchronized void enterCounterwise() throws InterruptedException{
 		while(nClockwise>0){
-			System.out.println("nC "+nClockwise + "nCC "+nCounterwise);
 			wait();
 		}nCounterwise++;
 	}
 	public synchronized void enterClockwise() throws InterruptedException{
 		while(nCounterwise>0){
-			System.out.println("nC "+nClockwise + "nCC "+nCounterwise);
 			wait();
 		}nClockwise++;
 	}
