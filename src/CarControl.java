@@ -240,10 +240,12 @@ public class CarControl implements CarControlI{
 
     public void stopCar(int no) {
         gate[no].close();
+        if(barrier.check()){
+        	barrier.freeCars();
+        }
         
     }
     
-
     public void barrierOn() { 
         barrier.on();
     }

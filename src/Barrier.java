@@ -28,25 +28,33 @@ class Barrier {
    public void sync() throws InterruptedException { 
 	   
 	   if(barrier){
-		   System.out.println("inden bar: "+bar);
 		   mutex.P();
 		   count++;
 		   mutex.V();
-		   
-		   int noOfCars = carControl.drivingCars();
-		   System.out.println("count: "+count+" noOfCars: "+noOfCars);
-		   if(count==noOfCars){
-			   System.out.println("come on!");
-			   for(int i=0;i<noOfCars-1;i++){
+
+		   if(count==carControl.drivingCars()){
+
+			   for(int i=0;i<carControl.drivingCars()-1;i++){
 				   bar.V();
 			   }
-			   System.out.println("(kør)bar: "+bar);
+
 			   count=0;
-		   }else{bar.P();System.out.println("bar: "+bar);}
+		   }else{bar.P();}
 
 	   }
 	   
-   }  // Wait for others to arrive (if barrier active)
+   } 
+   
+   public boolean check(){
+	   return (count==carControl.drivingCars());
+   }
+   
+   public void freeCars(){
+	   for(int i=0;i<carControl.drivingCars();i++){
+		   bar.V();
+	   }
+	   count=0;
+   }
 
    public void on() {  
 	   barrier = true;
