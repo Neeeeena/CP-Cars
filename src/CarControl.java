@@ -149,10 +149,10 @@ class Car extends Thread {
                 
               //Bridge
                 if( no < 5 && newpos.col == 1 && (newpos.row == 1)){
-          		   bridge.enter();
+          		   bridge.cwenter();
           	   }
           	   else if ( no >= 5 && newpos.col == 3 && newpos.row == 0) {
-          		   bridge.enter(); 
+          		   bridge.ccwenter(); 
           	   } 
            	 
                 
@@ -180,10 +180,10 @@ class Car extends Thread {
                 
                 // Bridge
                 if( no < 5 && curpos.col == 4 && (curpos.row == 1)){
-          		   bridge.leave();
+          		   bridge.cwleave();
           	   }
           	   else if ( no >= 5 && curpos.col == 0 && curpos.row == 0) {
-          		   bridge.leave(); 
+          		   bridge.ccwleave(); 
           	   } 
             
                 curpos = newpos;
