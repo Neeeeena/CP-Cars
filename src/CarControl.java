@@ -297,7 +297,9 @@ public class CarControl implements CarControlI{
     }
 
     public void stopCar(int no) {
-    	barrier.removed();
+    	if(barrier.waitingForOne()){
+    		barrier.removed();
+    	}
         gate[no].close();
         
     }
@@ -321,7 +323,7 @@ public class CarControl implements CarControlI{
 
     public void removeCar(int no) { 
         if(car[no]!=null && car[no].isAlive()){
-        	stopCar(no);
+        	gate[no].close();
         	car[no].interrupt();
         	
         }
