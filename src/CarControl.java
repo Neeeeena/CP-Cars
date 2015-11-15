@@ -190,48 +190,44 @@ class Car extends Thread {
          		   inAlleyCC = false;
          	   }   
                
-
                 curpos = newpos;
                 count = 1;
-                
-                
             }
 
         } catch (InterruptedException e) {
-        	cd.println("i catch, count: "+count);
-        	if(inAlleyC){
-        		alley.leaveClockwise();
-        	}else if(inAlleyCC){
-        		alley.leaveCounterwise();
-        	}
-        	if(count==1||count==3){
-        		ps.s[curpos.row][curpos.col].V();
-        		cd.clear(curpos);}
-        	else if(count==2){
-        		ps.s[curpos.row][curpos.col].V();
-        		barrier.removedDecCount();
-        		cd.clear(curpos);
-        	}
-        	else if(count==4){
-        		ps.s[curpos.row][curpos.col].V();
-        		ps.s[newpos.row][newpos.col].V();
-        		cd.clear(curpos,newpos);
-        	}else if(count==5){
-        		ps.s[newpos.row][newpos.col].V();
-        		ps.s[curpos.row][curpos.col].V();
-        		cd.clear(curpos);
-        	}else if(count==0){
-        		cd.clear(curpos);
-        	}
-        	if(barrier.waitingForOne()){
-        		barrier.removed();
-        	}
-  //          curpos=startpos;
+        	cleanUp();
         }
     }
    
    public void cleanUp(){
-	   
+	   cd.println("i catch, count: "+count);
+		if(inAlleyC){
+			alley.leaveClockwise();
+		}else if(inAlleyCC){
+			alley.leaveCounterwise();
+		}
+		if(count==1||count==3){
+			ps.s[curpos.row][curpos.col].V();
+			cd.clear(curpos);}
+		else if(count==2){
+			ps.s[curpos.row][curpos.col].V();
+			barrier.removedDecCount();
+			cd.clear(curpos);
+		}
+		else if(count==4){
+			ps.s[curpos.row][curpos.col].V();
+			ps.s[newpos.row][newpos.col].V();
+			cd.clear(curpos,newpos);
+		}else if(count==5){
+			ps.s[newpos.row][newpos.col].V();
+			ps.s[curpos.row][curpos.col].V();
+			cd.clear(curpos);
+		}else if(count==0){
+			cd.clear(curpos);
+		}
+		if(barrier.waitingForOne()){
+			barrier.removed();
+		}
    }
    
 
@@ -326,12 +322,17 @@ public class CarControl implements CarControlI{
         if(car[no]!=null && car[no].isAlive()){
         	gate[no].close();
         	car[no].interrupt();
+        	try {
+				car[no].sleep(1);
+			} catch (InterruptedException e) {
+				car[no].cleanUp();
+			}
         	
         }
     }
 
     public void restoreCar(int no) {
-    	if(!car[no].isAlive()){
+    	if(car[no].isInterrupted() || !car[no].isAlive()){
 	    	car[no] = new Car(no,cd,gate[no],ps, alley, barrier, this);
 	        car[no].start();
     	}
