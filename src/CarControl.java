@@ -223,7 +223,9 @@ class Car extends Thread {
         	}else if(count==0){
         		cd.clear(curpos);
         	}
-        	barrier.removed();
+        	if(barrier.waitingForOne()){
+        		barrier.removed();
+        	}
   //          curpos=startpos;
         }
     }

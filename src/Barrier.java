@@ -30,6 +30,10 @@ class Barrier {
 		notifyAll();
 	}
 	
+	public synchronized boolean waitingForOne(){
+		return (count==carControl.drivingCars()-1);
+	}
+	
 	public synchronized void sync() throws InterruptedException{
 		if(shutdown){
 			count++;
