@@ -38,7 +38,7 @@ class Gate {
 
 class Car extends Thread {
 
-    int basespeed = 120;             // Rather: degree of slowness
+    int basespeed = 100;             // Rather: degree of slowness
     int variation =  50;             // Percentage of base speed
 
     CarDisplayI cd;                  // GUI part
@@ -297,10 +297,11 @@ public class CarControl implements CarControlI{
     }
 
     public void stopCar(int no) {
+    	gate[no].close();
     	if(barrier.waitingForOne()){
     		barrier.removed();
     	}
-        gate[no].close();
+        
         
     }
     

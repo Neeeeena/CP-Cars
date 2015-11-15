@@ -31,7 +31,7 @@ class Barrier {
 	}
 	
 	public synchronized boolean waitingForOne(){
-		return (count==carControl.drivingCars()-1);
+		return (count==carControl.drivingCars());
 	}
 	
 	public synchronized void sync() throws InterruptedException{
